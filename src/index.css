@@ -1,9 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pinyon+Script&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-signature: "Pinyon Script", cursive;
 
   --color-brand-bg: #0f0c29;
   --color-brand-orange: #f97316;
@@ -11,6 +12,19 @@
   --color-brand-purple: #8b5cf6;
   
   --animate-float: float 8s ease-in-out infinite;
+  
+  --gpu-accelerate: {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform: translate3d(0, 0, 0);
+  };
+}
+
+.gpu-accelerated {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 @keyframes float {
@@ -25,6 +39,24 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Custom Branded Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0c29;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #f97316, #ec4899);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #f97316, #ec4899, #8b5cf6);
   -webkit-background-clip: text;
@@ -36,6 +68,9 @@ body {
   backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .glass-card-hover {
@@ -70,6 +105,28 @@ body {
   opacity: 0.4;
 }
 
+.section-divider-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, var(--color-brand-bg), transparent);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.section-divider-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to top, var(--color-brand-bg), transparent);
+  pointer-events: none;
+  z-index: 20;
+}
+
 .scroll-reveal {
   opacity: 0;
   transform: translateY(30px);
@@ -79,4 +136,12 @@ body {
 .scroll-reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -1,72 +1,96 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import Navbar from './components/Navbar';
+import { useState, useEffect } from 'react';
+import MainNavbar from './components/MainNavbar';
 import Hero from './components/Hero';
+import About from './components/About';
 import Skills from './components/Skills';
-import Menu from './components/Menu';
+import CategoryShowcase from './components/CategoryShowcase';
+import Showcase from './components/Showcase';
 import Contact from './components/Contact';
-import { motion, useScroll, useSpring, useTransform } from 'motion/react';
+import ProductPage from './components/ProductPage';
+import Gallery from './components/Gallery';
+import BookingModal from './components/BookingModal';
+import ScrollProgress from './components/ui/scroll-progress';
+import CustomCursor from './components/ui/custom-cursor';
+import Packages from './components/Packages';
+import Testimonials from './components/Testimonials';
+import WhatsAppButton from './components/ui/WhatsAppButton';
+import RevealCover from './components/RevealCover';
+import CinematicOverlay from './components/ui/CinematicOverlay';
+import { Product, products } from './data';
 
 export default function App() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  // Force scroll to top on refresh/mount
+  useEffect(() => {
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="relative font-sans text-white bg-brand-bg selection:bg-brand-orange/30 selection:text-white min-h-screen">
-      {/* Mesh Gradient Background */}
-      <div className="mesh-gradient">
-        <div className="mesh-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-600 animate-float" />
-        <div className="mesh-blob bottom-[0%] right-[-10%] w-[50%] h-[50%] bg-orange-500 animate-float [animation-delay:2s]" />
-        <div className="mesh-blob top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-500 animate-float [animation-delay:4s]" />
+    <>
+      <RevealCover />
+      <CinematicOverlay />
+      <div className="hidden lg:block">
+        <CustomCursor />
       </div>
-
-      {/* Scrolled Parallax Text */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 opacity-[0.05]">
-        <motion.div 
-          style={{ x: scrollYProgress }}
-          initial={{ x: "-100%" }}
-          className="text-[20vw] md:text-[30vw] font-black whitespace-nowrap leading-none mt-[20vh] italic uppercase"
-        >
-          MIXOLOGY CRAFT BARMAN SERVICE MILKSHAKE
-        </motion.div>
-        <motion.div 
-          style={{ x: useTransform(scrollYProgress, [0, 1], ["100%", "-100%"]) }}
-          className="text-[20vw] md:text-[30vw] font-black whitespace-nowrap leading-none italic uppercase"
-        >
-          SAM BARTENDER REFRESH VIBRANT MODERN
-        </motion.div>
-      </div>
-
-      {/* Custom Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-brand-pink z-[100] origin-left"
-        style={{ scaleX }}
+      <ScrollProgress />
+      <WhatsAppButton />
+      <BookingModal 
+        isOpen={isBookingOpen} 
+        onClose={() => setIsBookingOpen(false)} 
       />
+      {/* Full-screen product detail overlay */}
+      {selectedProduct && (
+        <ProductPage
+          product={selectedProduct}
+          onBack={() => setSelectedProduct(null)}
+          onBookingClick={() => setIsBookingOpen(true)}
+          onNext={() => {
+            const categoryProducts = products.filter(p => p.category === selectedProduct.category);
+            const currentIndex = categoryProducts.findIndex(p => p.id === selectedProduct.id);
+            const nextProduct = categoryProducts[(currentIndex + 1) % categoryProducts.length];
+            setSelectedProduct(nextProduct);
+          }}
+          onPrev={() => {
+            const categoryProducts = products.filter(p => p.category === selectedProduct.category);
+            const currentIndex = categoryProducts.findIndex(p => p.id === selectedProduct.id);
+            const prevProduct = categoryProducts[(currentIndex - 1 + categoryProducts.length) % categoryProducts.length];
+            setSelectedProduct(prevProduct);
+          }}
+        />
+      )}
 
-      <Navbar />
-      
-      <main>
-        <Hero />
-        
-        <div className="relative">
-          {/* Subtle text parallax backgrounds can be added here */}
-          <Skills />
-          <Menu />
+      {/* Main site */}
+      <div className="relative font-sans text-white bg-brand-bg selection:bg-brand-orange/30 selection:text-white min-h-screen">
+        {/* Mesh Gradient Background */}
+        <div className="mesh-gradient">
+          <div className="mesh-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-600 animate-float" />
+          <div className="mesh-blob bottom-[0%] right-[-10%] w-[50%] h-[50%] bg-orange-500 animate-float [animation-delay:2s]" />
+          <div className="mesh-blob top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-500 animate-float [animation-delay:4s]" />
         </div>
-      </main>
 
-      <Contact />
-      
-      {/* Decorative Gradient Blob */}
-      <div className="fixed -bottom-40 -left-20 w-[500px] h-[500px] bg-brand-pink/5 rounded-full blur-[100px] pointer-events-none -z-10" />
-    </div>
+        <MainNavbar onBookingClick={() => setIsBookingOpen(true)} />
+
+        <main>
+          <Hero onBookingClick={() => setIsBookingOpen(true)} />
+          <About />
+          <div className="relative">
+            <Skills />
+            <CategoryShowcase onProductSelect={setSelectedProduct} />
+            <Gallery onBookingClick={() => setIsBookingOpen(true)} />
+            <Showcase />
+            <Packages onBookingClick={() => setIsBookingOpen(true)} />
+            <Testimonials />
+          </div>
+        </main>
+
+        <Contact />
+
+        {/* Decorative Gradient Blob */}
+        <div className="fixed -bottom-40 -left-20 w-[500px] h-[500px] bg-brand-pink/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+      </div>
+    </>
   );
 }
-
