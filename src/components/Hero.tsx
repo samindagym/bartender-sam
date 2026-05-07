@@ -2,12 +2,23 @@ import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
 import { Typewriter } from './ui/typewriter';
 import Magnetic from './ui/magnetic';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function Hero({ onBookingClick }: { onBookingClick: () => void }) {
   const [isSplineLoaded, setIsSplineLoaded] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth > 768);
+    };
+    
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -72,29 +83,31 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
           <div className="absolute inset-20 bg-brand-orange/10 blur-[80px] rounded-full animate-pulse [animation-delay:1s]" />
           
           {/* Spline Container — Desktop Only */}
-          <motion.div 
-            style={{ scale: splineScale, opacity: splineOpacity, y: splineY }}
-            className="hidden md:block w-full h-full rounded-[40px] overflow-hidden relative group gpu-accelerated"
-          >
-            {/* Professional Loader Overlay */}
-            <div className={`absolute inset-0 flex flex-col items-center justify-center bg-[#0f0c29] transition-opacity duration-1000 z-10 ${isSplineLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-              <Loader2 className="w-12 h-12 text-brand-orange animate-spin mb-4" />
-              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Initializing 3D Canvas</div>
-            </div>
-            
-            <Spline 
-              scene="https://prod.spline.design/hsUR7smnUYpLOv0h/scene.splinecode" 
-              className="w-full h-full touch-pan-y"
-              onLoad={() => setIsSplineLoaded(true)}
-              onWheel={(e) => {
-                // This prevents Spline from hijacking the scroll wheel
-                // while still allowing click/drag interactions
-                e.currentTarget.parentElement?.dispatchEvent(new WheelEvent('wheel', e));
-              }}
-            />
-            {/* Overlay Gradient to blend bottom edge */}
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-brand-bg to-transparent pointer-events-none z-20" />
-          </motion.div>
+          {isDesktop && (
+            <motion.div 
+              style={{ scale: splineScale, opacity: splineOpacity, y: splineY }}
+              className="w-full h-full rounded-[40px] overflow-hidden relative group gpu-accelerated"
+            >
+              {/* Professional Loader Overlay */}
+              <div className={`absolute inset-0 flex flex-col items-center justify-center bg-[#0f0c29] transition-opacity duration-1000 z-10 ${isSplineLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <Loader2 className="w-12 h-12 text-brand-orange animate-spin mb-4" />
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">Initializing 3D Canvas</div>
+              </div>
+              
+              <Spline 
+                scene="https://prod.spline.design/hsUR7smnUYpLOv0h/scene.splinecode" 
+                className="w-full h-full touch-pan-y"
+                onLoad={() => setIsSplineLoaded(true)}
+                onWheel={(e) => {
+                  // This prevents Spline from hijacking the scroll wheel
+                  // while still allowing click/drag interactions
+                  e.currentTarget.parentElement?.dispatchEvent(new WheelEvent('wheel', e));
+                }}
+              />
+              {/* Overlay Gradient to blend bottom edge */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-brand-bg to-transparent pointer-events-none z-20" />
+            </motion.div>
+          )}
 
           {/* Mobile Hero Image — Replaces Spline for performance */}
           <div className="md:hidden w-full h-full rounded-[32px] overflow-hidden relative gpu-accelerated">

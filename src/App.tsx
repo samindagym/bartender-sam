@@ -21,20 +21,29 @@ import { Product, products } from './data';
 export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
+  );
 
   // Force scroll to top on refresh/mount
   useEffect(() => {
     window.history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
     <>
       <RevealCover />
       <CinematicOverlay />
-      <div className="hidden lg:block">
-        <CustomCursor />
-      </div>
+      {isDesktop && (
+        <div className="hidden lg:block">
+          <CustomCursor />
+        </div>
+      )}
       <ScrollProgress />
       <WhatsAppButton />
       <BookingModal 
@@ -65,11 +74,13 @@ export default function App() {
       {/* Main site */}
       <div className="relative font-sans text-white bg-brand-bg selection:bg-brand-orange/30 selection:text-white min-h-screen">
         {/* Mesh Gradient Background */}
-        <div className="mesh-gradient">
-          <div className="mesh-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-600 animate-float" />
-          <div className="mesh-blob bottom-[0%] right-[-10%] w-[50%] h-[50%] bg-orange-500 animate-float [animation-delay:2s]" />
-          <div className="mesh-blob top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-500 animate-float [animation-delay:4s]" />
-        </div>
+        {isDesktop && (
+          <div className="mesh-gradient">
+            <div className="mesh-blob top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-600 animate-float" />
+            <div className="mesh-blob bottom-[0%] right-[-10%] w-[50%] h-[50%] bg-orange-500 animate-float [animation-delay:2s]" />
+            <div className="mesh-blob top-[20%] right-[10%] w-[40%] h-[40%] bg-pink-500 animate-float [animation-delay:4s]" />
+          </div>
+        )}
 
         <MainNavbar onBookingClick={() => setIsBookingOpen(true)} />
 
