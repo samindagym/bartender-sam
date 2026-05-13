@@ -3,6 +3,11 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
+
+  // Skip custom cursor on touch/mobile devices — no mouse to track
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+  if (isMobile) return null;
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 

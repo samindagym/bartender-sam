@@ -121,6 +121,8 @@ const ProductPage: React.FC<ProductPageProps> = ({ product, onBack, onBookingCli
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = `/product-images/${product.category}/hero.webp`;
                   }}

@@ -8,16 +8,19 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 export default function Hero({ onBookingClick }: { onBookingClick: () => void }) {
   const [isSplineLoaded, setIsSplineLoaded] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth > 768);
+    const checkViewport = () => {
+      const w = window.innerWidth;
+      setIsDesktop(w > 768);
+      setIsMobile(w <= 768);
     };
-    
-    checkIsDesktop();
-    window.addEventListener('resize', checkIsDesktop);
-    return () => window.removeEventListener('resize', checkIsDesktop);
+
+    checkViewport();
+    window.addEventListener('resize', checkViewport);
+    return () => window.removeEventListener('resize', checkViewport);
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -25,6 +28,7 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
     offset: ["start start", "end start"]
   });
 
+  // Scroll-driven transforms — disabled on mobile to save JS overhead
   const splineScale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
   const splineOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const splineY = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -34,9 +38,13 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
       {/* Blender */}
       <div className="section-divider-bottom" />
 
-      {/* Decorative background elements */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-pink/20 blur-[120px] rounded-full animate-float" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-purple/20 blur-[120px] rounded-full animate-float [animation-delay:2s]" />
+      {/* Decorative background elements — skip heavy blur on mobile */}
+      {!isMobile && (
+        <>
+          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-pink/20 blur-[120px] rounded-full animate-float" />
+          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-purple/20 blur-[120px] rounded-full animate-float [animation-delay:2s]" />
+        </>
+      )}
 
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center z-10">
         <div>
@@ -78,9 +86,13 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
         </div>
 
         <div className="relative h-[500px] md:h-[700px] w-full">
-          {/* Enhanced Glowing Background */}
-          <div className="absolute inset-10 bg-brand-purple/20 blur-[100px] rounded-full animate-pulse" />
-          <div className="absolute inset-20 bg-brand-orange/10 blur-[80px] rounded-full animate-pulse [animation-delay:1s]" />
+          {/* Glowing Background — reduced intensity on mobile */}
+          {!isMobile && (
+            <>
+              <div className="absolute inset-10 bg-brand-purple/20 blur-[100px] rounded-full animate-pulse" />
+              <div className="absolute inset-20 bg-brand-orange/10 blur-[80px] rounded-full animate-pulse [animation-delay:1s]" />
+            </>
+          )}
           
           {/* Spline Container — Desktop Only */}
           {isDesktop && (
@@ -99,8 +111,6 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
                 className="w-full h-full touch-pan-y"
                 onLoad={() => setIsSplineLoaded(true)}
                 onWheel={(e) => {
-                  // This prevents Spline from hijacking the scroll wheel
-                  // while still allowing click/drag interactions
                   e.currentTarget.parentElement?.dispatchEvent(new WheelEvent('wheel', e));
                 }}
               />
@@ -114,9 +124,10 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
             <img 
               src="/sam-profile/sam-profile.webp" 
               alt="Sam Bartender"
-              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover"
               onError={(e) => {
-                // Fallback if personal photo is not yet uploaded
                 (e.currentTarget as HTMLImageElement).src = "/story-images/cocktails/Bahama-mama.webp";
               }}
             />

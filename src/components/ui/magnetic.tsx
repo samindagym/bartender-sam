@@ -2,6 +2,10 @@ import React, { useRef, useState } from 'react'
 import { motion } from 'framer-motion';
 
 export default function Magnetic({ children }: { children: React.ReactNode }) {
+    // Touch devices have no mouse — magnetic effect is wasted overhead
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+    if (isMobile) return <>{children}</>;
+
     const ref = useRef<HTMLDivElement>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
 

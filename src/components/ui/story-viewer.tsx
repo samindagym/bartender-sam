@@ -169,6 +169,9 @@ function StoryThumbnail({
                 src={lastStory.src}
                 alt={`${username}'s story`}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                loading="lazy"
+                width="80"
+                height="80"
               />
             )}
           </div>
@@ -264,6 +267,7 @@ function StoryContent({
           autoPlay
           playsInline
           muted={isMuted}
+          loading="lazy"
           onCanPlay={(e) => {
             const video = e.currentTarget;
             onVideoReady(video.duration * 1000);
@@ -284,6 +288,7 @@ function StoryContent({
             "w-full h-full object-contain transition-opacity duration-200",
             isInitialLoading ? "opacity-0" : "opacity-100"
           )}
+          loading="lazy"
           onLoad={onImageLoad}
         />
       )}
@@ -553,7 +558,7 @@ function StoryViewerModal({
           <div className="flex items-center justify-between px-4 mt-3">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full overflow-hidden border border-white/20">
-                <img src={avatar} alt={username} className="w-full h-full object-cover" />
+                <img src={avatar} alt={username} className="w-full h-full object-cover" loading="lazy" width="40" height="40" />
               </div>
               <div className="flex flex-col">
                 <span className="text-white text-sm font-medium">{username}</span>

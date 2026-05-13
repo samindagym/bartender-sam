@@ -92,6 +92,8 @@ const CategoryShowcase: React.FC<Props> = ({ onProductSelect }) => {
                       src={product.image}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).src = `/product-images/${product.category}/hero.png`;
                       }}

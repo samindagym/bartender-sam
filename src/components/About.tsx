@@ -31,6 +31,10 @@ export default function About() {
                 src="/sam-profile/About-me.webp" 
                 alt="Sam the Bartender" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                loading="eager"
+                decoding="async"
+                width="600"
+                height="750"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-transparent to-transparent opacity-60" />
             </div>

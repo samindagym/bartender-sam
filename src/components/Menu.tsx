@@ -191,6 +191,10 @@ export default function Menu() {
                     alt={item.name} 
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="500"
                   />
                   
                   {/* Category Badge */}

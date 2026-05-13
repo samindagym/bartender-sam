@@ -5,6 +5,9 @@ export default function Logo({ className = "" }: { className?: string }) {
         src="/logo.png" 
         alt="Sam The Bartender Logo" 
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        loading="lazy"
+        width="120"
+        height="40"
       />
     </div>
   );
