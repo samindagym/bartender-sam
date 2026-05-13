@@ -55,27 +55,34 @@ export const Typewriter = ({
             style={{ 
               WebkitTextFillColor: 'initial', 
               WebkitBackgroundClip: 'initial',
+              backgroundClip: 'initial',
               color: 'white',
               fontStyle: 'normal',
-              marginLeft: '8px'
+              marginLeft: '8px',
+              // Force rendering of the emoji even if parent is transparent
+              opacity: 1,
+              visibility: 'visible'
             }}
           >
             {part}
           </span>
         );
       }
-      return part;
+      return <span key={i}>{part}</span>;
     });
   };
 
   return (
-    <span className="inline-block">
+    <span className="relative">
       {renderTextWithEmojis(displayedText)}
       <motion.span
         animate={{ opacity: [1, 0] }}
         transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
         className="inline-block w-[0.1em] h-[1em] bg-current ml-1 align-middle"
-        style={{ transform: 'translateY(-10%)' }}
+        style={{ 
+          transform: 'translateY(-10%)',
+          backgroundColor: 'currentColor' // Inherit from parent text color (which is transparent but has gradient)
+        }}
       />
     </span>
   );

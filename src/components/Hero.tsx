@@ -44,7 +44,7 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
             style={{ fontFamily: "'Johnston', 'Johnston100', 'Gill Sans', 'Gill Sans MT', sans-serif" }}
           >
             SAM THE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-brand-pink to-brand-purple italic pr-4">
+            <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-brand-orange via-brand-pink to-brand-purple italic pr-4">
               <Typewriter text={['BARTENDER 🥃', 'MIXOLOGIST 🧪', 'CREATOR ✨']} waitTime={2500} />
             </span>
           </h1>
