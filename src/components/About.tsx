@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Reveal } from './ui/reveal';
+import { useMotionConfig } from '../lib/useMotionConfig';
 
 const stats = [
   { label: 'Events Completed', value: '20+' },
@@ -9,6 +10,8 @@ const stats = [
 ];
 
 export default function About() {
+  const { shouldAnimateLoop } = useMotionConfig();
+
   return (
     <section id="about-sam" className="relative py-32 overflow-hidden bg-transparent">
       {/* Blenders */}
@@ -41,7 +44,7 @@ export default function About() {
             
             {/* Decorative Floating Element - With Float Animation */}
             <motion.div 
-              animate={{ y: [0, -10, 0] }}
+              animate={shouldAnimateLoop ? { y: [0, -10, 0] } : {}}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-8 -right-8 w-48 h-48 glass-card rounded-[32px] p-6 border-white/20 hidden md:block"
             >
@@ -87,7 +90,7 @@ export default function About() {
                 >
                   {/* Inner Floating Layer - Hardware Accelerated */}
                   <motion.div 
-                    animate={{ y: [0, -6, 0] }}
+                    animate={shouldAnimateLoop ? { y: [0, -6, 0] } : {}}
                     transition={{ 
                       duration: 3, 
                       repeat: Infinity, 
@@ -108,7 +111,7 @@ export default function About() {
               <motion.span 
                 initial={{ opacity: 0, rotate: -5, y: 10 }}
                 whileInView={{ opacity: 1, rotate: -2, y: 0 }}
-                animate={{ y: [0, -8, 0] }}
+                animate={shouldAnimateLoop ? { y: [0, -8, 0] } : {}}
                 transition={{ 
                   initial: { duration: 1.5, ease: "easeOut" },
                   animate: { duration: 4, repeat: Infinity, ease: "easeInOut" }

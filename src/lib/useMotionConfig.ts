@@ -48,9 +48,11 @@ export function useMotionConfig() {
     },
     // Feature flags for what to animate
     shouldAnimate: !isLowEndDevice,
-    shouldHoverAnimate: !isLowEndDevice && !/iPad|iPhone|iPod/.test(ua),
+    shouldAnimateLoop: !isMobile && !isLowEndDevice, // Kill loops on all mobile/low-end
+    shouldShowSpline: !isMobile && !isLowEndDevice, // Kill Spline on all mobile/low-end
+    shouldHoverAnimate: !isMobile && !isLowEndDevice && !/iPad|iPhone|iPod/.test(userAgent),
     shouldAnimateOnScroll: !isLowEndDevice,
     // Reduced motion preference from OS
-    prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    prefersReducedMotion: typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
   };
 }

@@ -1,9 +1,11 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import BrandLogo from './BrandLogo';
+import { useMotionConfig } from '../lib/useMotionConfig';
 
 export default function RevealCover() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { shouldAnimateLoop, isLowEndDevice } = useMotionConfig();
   
   // Track scroll progress of the "intro" area
   const { scrollYProgress } = useScroll({
@@ -28,11 +30,13 @@ export default function RevealCover() {
         }}
         className="fixed inset-0 flex flex-col items-center justify-center pointer-events-auto gpu-accelerated"
       >
-        {/* Mirroring the main site's mesh gradient for perfect continuity */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden lg:block">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-orange/10 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-pink/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
-        </div>
+        {/* Mirroring the main site's mesh gradient for perfect continuity - Desktop only */}
+        {shouldAnimateLoop && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none hidden lg:block">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-orange/10 blur-[120px] rounded-full animate-pulse" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-pink/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+          </div>
+        )}
 
         {/* Bottom Blender - Ensures smooth transition to Hero */}
         <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#0f0c29] to-transparent z-10" />
@@ -44,12 +48,12 @@ export default function RevealCover() {
         >
           {/* Bigger Logo with Entrance & Breathing Animation */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+            initial={{ opacity: 0, scale: 0.8, filter: isLowEndDevice ? 'none' : 'blur(10px)' }}
             animate={{ 
               opacity: 1, 
-              scale: [1, 1.05, 1],
+              scale: shouldAnimateLoop ? [1, 1.05, 1] : 1,
               filter: 'blur(0px)',
-              rotate: [0, 1, 0, -1, 0]
+              rotate: shouldAnimateLoop ? [0, 1, 0, -1, 0] : 0
             }}
             transition={{ 
               opacity: { duration: 1.5 },
@@ -59,8 +63,10 @@ export default function RevealCover() {
             }}
             className="w-48 h-48 md:w-72 md:h-72 relative"
           >
-            {/* Ambient Glow behind logo */}
-            <div className="absolute inset-0 bg-brand-orange/20 blur-[60px] rounded-full animate-pulse" />
+            {/* Ambient Glow behind logo - Desktop only */}
+            {shouldAnimateLoop && (
+              <div className="absolute inset-0 bg-brand-orange/20 blur-[60px] rounded-full animate-pulse" />
+            )}
             <BrandLogo />
           </motion.div>
           
@@ -73,7 +79,7 @@ export default function RevealCover() {
             <h1 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white mb-4">
               Sam The <span className="gradient-text">Bartender.</span>
             </h1>
-            <p className="text-white/30 text-[11px] font-black uppercase tracking-[0.6em] animate-pulse">
+            <p className={`text-white/30 text-[11px] font-black uppercase tracking-[0.6em] ${shouldAnimateLoop ? 'animate-pulse' : ''}`}>
               Scroll to unveil the craft
             </p>
           </motion.div>

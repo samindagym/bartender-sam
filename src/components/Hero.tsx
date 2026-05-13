@@ -4,31 +4,19 @@ import { Typewriter } from './ui/typewriter';
 import Magnetic from './ui/magnetic';
 import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useMotionConfig } from '../lib/useMotionConfig';
 
 export default function Hero({ onBookingClick }: { onBookingClick: () => void }) {
   const [isSplineLoaded, setIsSplineLoaded] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const checkViewport = () => {
-      const w = window.innerWidth;
-      setIsDesktop(w > 768);
-      setIsMobile(w <= 768);
-    };
-
-    checkViewport();
-    window.addEventListener('resize', checkViewport);
-    return () => window.removeEventListener('resize', checkViewport);
-  }, []);
+  const { shouldShowSpline, shouldAnimateLoop } = useMotionConfig();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
-  // Scroll-driven transforms — disabled on mobile to save JS overhead
+  // Scroll-driven transforms — only used on desktop
   const splineScale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
   const splineOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const splineY = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -39,7 +27,7 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
       <div className="section-divider-bottom" />
 
       {/* Decorative background elements — skip heavy blur on mobile */}
-      {!isMobile && (
+      {shouldAnimateLoop && (
         <>
           <div className="absolute top-1/4 -left-20 w-96 h-96 bg-brand-pink/20 blur-[120px] rounded-full animate-float" />
           <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-brand-purple/20 blur-[120px] rounded-full animate-float [animation-delay:2s]" />
@@ -87,7 +75,7 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
 
         <div className="relative h-[500px] md:h-[700px] w-full">
           {/* Glowing Background — reduced intensity on mobile */}
-          {!isMobile && (
+          {shouldAnimateLoop && (
             <>
               <div className="absolute inset-10 bg-brand-purple/20 blur-[100px] rounded-full animate-pulse" />
               <div className="absolute inset-20 bg-brand-orange/10 blur-[80px] rounded-full animate-pulse [animation-delay:1s]" />
@@ -95,7 +83,7 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
           )}
           
           {/* Spline Container — Desktop Only */}
-          {isDesktop && (
+          {shouldShowSpline && (
             <motion.div 
               style={{ scale: splineScale, opacity: splineOpacity, y: splineY }}
               className="w-full h-full rounded-[40px] overflow-hidden relative group gpu-accelerated"
@@ -120,21 +108,23 @@ export default function Hero({ onBookingClick }: { onBookingClick: () => void })
           )}
 
           {/* Mobile Hero Image — Replaces Spline for performance */}
-          <div className="md:hidden w-full h-full rounded-[32px] overflow-hidden relative gpu-accelerated">
-            <img 
-              src="/sam-profile/sam-profile.webp" 
-              alt="Sam Bartender"
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "/story-images/cocktails/Bahama-mama.webp";
-              }}
-            />
-            {/* Gradient overlays to blend with the dark background */}
-            <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/20 to-transparent pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-brand-bg/40 to-transparent pointer-events-none" />
-          </div>
+          {!shouldShowSpline && (
+            <div className="w-full h-full rounded-[32px] overflow-hidden relative gpu-accelerated">
+              <img 
+                src="/sam-profile/sam-profile.webp" 
+                alt="Sam Bartender"
+                loading="eager"
+                decoding="async"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/story-images/cocktails/Bahama-mama.webp";
+                }}
+              />
+              {/* Gradient overlays to blend with the dark background */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-brand-bg/40 to-transparent pointer-events-none" />
+            </div>
+          )}
           
           {/* Floating badge */}
           <div className="absolute bottom-6 left-6 md:-bottom-6 md:-left-6 bg-brand-bg/80 backdrop-blur-xl border border-white/10 p-4 md:p-6 rounded-3xl shadow-2xl shadow-brand-orange/10 animate-float z-20">

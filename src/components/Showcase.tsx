@@ -3,11 +3,13 @@ import { motion, useInView } from 'framer-motion';
 import Spline from '@splinetool/react-spline';
 import { Loader2, Sparkles } from 'lucide-react';
 import { Reveal } from './ui/reveal';
+import { useMotionConfig } from '../lib/useMotionConfig';
 
 export default function Showcase() {
   const [isLoaded, setIsLoaded] = useState(false);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "200px" });
+  const { shouldShowSpline, shouldAnimateLoop } = useMotionConfig();
 
   return (
     <section ref={sectionRef} className="relative min-h-[80vh] flex items-center justify-center py-24 overflow-hidden bg-transparent">
@@ -54,26 +56,38 @@ export default function Showcase() {
             <div className="relative w-full h-full flex items-center justify-center">
               
               {/* Concentric Orbital Rings */}
-              <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] border border-white/5 rounded-full z-0" 
-              />
-              <motion.div 
-                animate={{ rotate: -360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[350px] h-[350px] md:w-[550px] md:h-[550px] border border-brand-orange/10 rounded-full z-0" 
-              />
+              {shouldAnimateLoop ? (
+                <>
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] border border-white/5 rounded-full z-0" 
+                  />
+                  <motion.div 
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    className="absolute w-[350px] h-[350px] md:w-[550px] md:h-[550px] border border-brand-orange/10 rounded-full z-0" 
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] border border-white/5 rounded-full z-0" />
+                  <div className="absolute w-[350px] h-[350px] md:w-[550px] md:h-[550px] border border-brand-orange/10 rounded-full z-0" />
+                </>
+              )}
+              
               <div className="absolute w-[280px] h-[280px] md:w-[480px] md:h-[480px] bg-brand-orange/5 blur-[100px] rounded-full z-0 pointer-events-none" />
 
               {/* Rotating Orbital Accent */}
-              <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[320px] h-[320px] md:w-[520px] md:h-[520px] z-10 pointer-events-none"
-              >
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-orange rounded-full shadow-[0_0_15px_rgba(249,115,22,0.8)]" />
-              </motion.div>
+              {shouldAnimateLoop && (
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="absolute w-[320px] h-[320px] md:w-[520px] md:h-[520px] z-10 pointer-events-none"
+                >
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-orange rounded-full shadow-[0_0_15px_rgba(249,115,22,0.8)]" />
+                </motion.div>
+              )}
 
               {/* Main Interactive Canvas Area */}
               <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full overflow-hidden z-20 group">
@@ -86,12 +100,11 @@ export default function Showcase() {
                   <div className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20">Initializing Hologram</div>
                 </div>
 
-                {/* 3D Canvas - Only renders when in view */}
+                {/* 3D Canvas - Only renders on Desktop & when in view */}
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                   <div className="w-[150%] h-[150%] flex-shrink-0 flex items-center justify-center transform transition-all duration-1000 group-hover:scale-105">
-                    {/* The 40% zoom out is now achieved by balancing the 1.5x wrapper with a 0.45x scale */}
                     <div className="w-full h-full scale-[0.45] md:scale-[0.55]">
-                      {isInView && (
+                      {shouldShowSpline && isInView ? (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: isLoaded ? 1 : 0 }}
@@ -105,6 +118,15 @@ export default function Showcase() {
                             className="w-full h-full"
                           />
                         </motion.div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <img 
+                            src="/product-images/cocktails/hero.png" 
+                            alt="3D Preview"
+                            className="w-[60%] h-auto opacity-50 blur-[2px]"
+                            onLoad={() => setIsLoaded(true)}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
